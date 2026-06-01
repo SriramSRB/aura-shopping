@@ -115,7 +115,7 @@ resource "aws_instance" "aura-shopping_server" {
 }
 
 resource "aws_eip" "aura-shopping_eip" {
-    instance = aws_instance.aura-shopping_key.id
+    instance = aws_instance.aura-shopping_server.id
     domain   = "vpc"
     tags     = { Name = "aura-shopping-eip" }
 }
