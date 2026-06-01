@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AURA — Elevate Every Day</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --white: #FAFAFA;
+      --black: #0D0D0D;
+      --gold: #C9A84C;
+      --gold-light: #E8D5A3;
+      --gold-pale: #F7F0E0;
+      --gray-light: #F2F2F0;
+      --gray-mid: #D8D8D4;
+      --gray-text: #888880;
+      --transition: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--white); color: var(--black); overflow-x: hidden; }
+    h1, h2, h3, h4 { font-family: 'Cormorant Garamond', serif; font-weight: 300; letter-spacing: -0.02em; }
+
+    /* LOADER */
+    .page-loader { position: fixed; inset: 0; background: var(--black); z-index: 999; display: flex; align-items: center; justify-content: center; transition: opacity 0.7s ease; }
+    .page-loader.done { opacity: 0; pointer-events: none; }
+    .loader-logo { font-family: 'Cormorant Garamond', serif; font-size: 3.5rem; font-weight: 600; letter-spacing: 0.4em; color: var(--white); text-align: center; }
+    .loader-logo span { color: var(--gold); }
+    .loader-line { width: 0; height: 2px; background: var(--gold); margin-top: 0.5rem; animation: loadLine 1.6s ease forwards; }
+    @keyframes loadLine { to { width: 100%; } }
+
+    /* NAV */
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: space-between; padding: 0 4rem; height: 72px; background: rgba(250,250,250,0.94); backdrop-filter: blur(20px); border-bottom: 1px solid var(--gray-mid); }
+    .nav-logo { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 600; letter-spacing: 0.3em; color: var(--black); text-decoration: none; }
+    .nav-logo span { color: var(--gold); }
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .nav-links a { font-size: 0.78rem; font-weight: 400; letter-spacing: 0.12em; text-transform: uppercase; color: var(--black); text-decoration: none; position: relative; padding-bottom: 2px; }
+    .nav-links a::after { content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 1px; background: var(--gold); transition: width 0.3s ease; }
+    .nav-links a:hover::after { width: 100%; }
+    .nav-actions { display: flex; align-items: center; gap: 1.2rem; }
+    .nav-search { display: flex; align-items: center; gap: 0.5rem; background: var(--gray-light); border: 1px solid var(--gray-mid); padding: 0.5rem 1rem; font-size: 0.78rem; color: var(--gray-text); cursor: pointer; width: 180px; transition: border-color 0.3s; }
+    .nav-search:hover { border-color: var(--gold); }
+    .nav-icon-btn { background: none; border: none; cursor: pointer; font-size: 0.78rem; letter-spacing: 0.08em; color: var(--black); padding: 0.4rem; position: relative; font-family: 'DM Sans', sans-serif; }
+    .cart-count { position: absolute; top: -4px; right: -8px; background: var(--gold); color: var(--white); font-size: 0.6rem; border-radius: 50%; width: 16px; height: 16px; display: none; align-items: center; justify-content: center; }
+    .btn-primary { background: var(--black); color: var(--white); border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase; padding: 0.85rem 2rem; transition: background 0.3s; text-decoration: none; display: inline-block; }
+    .btn-primary:hover { background: var(--gold); }
+    .btn-outline { background: transparent; color: var(--black); border: 1px solid var(--black); cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase; padding: 0.85rem 2rem; transition: all 0.3s; text-decoration: none; display: inline-block; }
+    .btn-outline:hover { background: var(--black); color: var(--white); }
+
+    /* ANNOUNCEMENT */
+    .announcement { background: var(--black); color: var(--white); text-align: center; padding: 0.7rem; font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase; margin-top: 72px; }
+    .announcement span { color: var(--gold); }
+
+    /* HERO */
+    .hero { min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr; }
+    .hero-left { display: flex; flex-direction: column; justify-content: center; padding: 6rem 4rem; }
+    .hero-tag { font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.8rem; }
+    .hero-tag::before { content: ''; width: 40px; height: 1px; background: var(--gold); }
+    .hero-title { font-size: clamp(3rem, 5vw, 5.5rem); line-height: 1.05; margin-bottom: 1.5rem; }
+    .hero-title em { color: var(--gold); font-style: italic; }
+    .hero-subtitle { font-size: 0.95rem; line-height: 1.8; color: var(--gray-text); max-width: 400px; margin-bottom: 2.5rem; font-weight: 300; }
+    .hero-cta { display: flex; gap: 1rem; }
+    .hero-stats { display: flex; gap: 3rem; margin-top: 4rem; padding-top: 2rem; border-top: 1px solid var(--gray-mid); }
+    .hero-stat-num { font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 500; }
+    .hero-stat-label { font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gray-text); margin-top: 0.3rem; }
+    .hero-right { position: relative; overflow: hidden; }
+    .hero-img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 8s ease; }
+    .hero-right:hover .hero-img { transform: scale(1.03); }
+    .hero-badge { position: absolute; bottom: 3rem; left: -2rem; background: var(--white); border: 1px solid var(--gray-mid); padding: 1.2rem 1.5rem; display: flex; align-items: center; gap: 1rem; box-shadow: 0 20px 60px rgba(0,0,0,0.1); }
+    .hero-badge-img { width: 56px; height: 56px; object-fit: cover; }
+    .hero-badge-label { font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); }
+    .hero-badge-name { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; margin-top: 0.2rem; }
+
+    /* SECTION HEADER */
+    .section-header { text-align: center; margin-bottom: 4rem; }
+    .section-tag { font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 1rem; }
+    .section-title { font-size: clamp(2rem, 3vw, 3rem); line-height: 1.1; }
+    .section-desc { font-size: 0.9rem; color: var(--gray-text); margin-top: 1rem; max-width: 500px; margin-left: auto; margin-right: auto; line-height: 1.7; }
+
+    /* CATEGORIES */
+    .categories { padding: 6rem 4rem; background: var(--gray-light); }
+    .cat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; }
+    .cat-card { position: relative; overflow: hidden; cursor: pointer; }
+    .cat-card:first-child { grid-row: span 2; }
+    .cat-card img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform var(--transition); min-height: 220px; }
+    .cat-card:first-child img { min-height: 460px; }
+    .cat-card:hover img { transform: scale(1.06); }
+    .cat-overlay { position: absolute; bottom: 0; left: 0; right: 0; padding: 1.5rem; background: linear-gradient(to top, rgba(13,13,13,0.75) 0%, transparent 100%); color: var(--white); }
+    .cat-label { font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold-light); margin-bottom: 0.3rem; }
+    .cat-name { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; font-weight: 300; }
+    .cat-count { font-size: 0.68rem; color: rgba(255,255,255,0.6); margin-top: 0.2rem; }
+
+    /* FEATURED */
+    .featured { padding: 6rem 4rem; }
+    .filter-bar { display: flex; align-items: center; justify-content: space-between; padding: 1rem 0; margin-bottom: 2rem; border-bottom: 1px solid var(--gray-mid); }
+    .filter-tabs { display: flex; }
+    .filter-tab { font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.5rem 1.2rem; border: 1px solid var(--gray-mid); background: none; cursor: pointer; margin-left: -1px; font-family: 'DM Sans', sans-serif; transition: all 0.2s; }
+    .filter-tab.active, .filter-tab:hover { background: var(--black); color: var(--white); border-color: var(--black); }
+    .filter-right { font-size: 0.78rem; color: var(--gray-text); display: flex; gap: 1rem; }
+    .products-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; }
+    .product-card { cursor: pointer; }
+    .product-img-wrap { position: relative; overflow: hidden; background: var(--gray-light); aspect-ratio: 3/4; margin-bottom: 1rem; }
+    .product-img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform var(--transition); }
+    .product-card:hover .product-img { transform: scale(1.05); }
+    .product-badge { position: absolute; top: 1rem; left: 1rem; background: var(--black); color: var(--white); font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.3rem 0.6rem; }
+    .product-badge.sale { background: var(--gold); }
+    .product-actions { position: absolute; bottom: 0; left: 0; right: 0; display: flex; transform: translateY(100%); transition: transform var(--transition); }
+    .product-card:hover .product-actions { transform: translateY(0); }
+    .product-add-btn { flex: 1; background: var(--black); color: var(--white); border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; padding: 0.9rem; transition: background 0.3s; }
+    .product-add-btn:hover { background: var(--gold); }
+    .product-wish-btn { width: 44px; background: var(--white); border: none; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center; }
+    .product-name { font-size: 0.85rem; font-weight: 500; margin-bottom: 0.25rem; }
+    .product-brand { font-size: 0.7rem; color: var(--gray-text); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.5rem; }
+    .product-price { display: flex; align-items: center; gap: 0.6rem; }
+    .product-price-current { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; font-weight: 500; }
+    .product-price-old { font-size: 0.8rem; color: var(--gray-text); text-decoration: line-through; }
+    .product-stars { display: flex; gap: 2px; margin-top: 0.4rem; align-items: center; }
+    .star { color: var(--gold); font-size: 0.72rem; }
+    .star-count { font-size: 0.68rem; color: var(--gray-text); margin-left: 4px; }
+
+    /* PROMO BANNER */
+    .promo-banner { display: grid; grid-template-columns: 1fr 1fr; min-height: 65vh; }
+    .promo-left { position: relative; overflow: hidden; }
+    .promo-img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 6s ease; }
+    .promo-left:hover .promo-img { transform: scale(1.04); }
+    .promo-right { background: var(--black); display: flex; flex-direction: column; justify-content: center; padding: 5rem; position: relative; overflow: hidden; }
+    .promo-right::before { content: 'AURA'; position: absolute; bottom: -2rem; right: -1rem; font-family: 'Cormorant Garamond', serif; font-size: 10rem; font-weight: 600; color: rgba(255,255,255,0.03); pointer-events: none; }
+    .promo-tag { font-size: 0.7rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); margin-bottom: 1.5rem; }
+    .promo-title { font-size: clamp(2.5rem, 4vw, 4rem); color: var(--white); line-height: 1.05; margin-bottom: 1.5rem; }
+    .promo-title em { color: var(--gold); font-style: italic; }
+    .promo-text { font-size: 0.9rem; color: rgba(255,255,255,0.5); line-height: 1.8; max-width: 380px; margin-bottom: 1.5rem; }
+    .promo-countdown { display: flex; gap: 2rem; margin-bottom: 2.5rem; }
+    .countdown-unit { text-align: center; }
+    .countdown-num { font-family: 'Cormorant Garamond', serif; font-size: 2.5rem; color: var(--white); line-height: 1; display: block; }
+    .countdown-label { font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-top: 0.3rem; display: block; }
+
+    /* TRENDING */
+    .trending { padding: 6rem 4rem; background: var(--gold-pale); }
+    .trending-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; grid-template-rows: auto auto; gap: 2px; }
+    .trending-card { position: relative; overflow: hidden; cursor: pointer; }
+    .trending-card:first-child { grid-row: span 2; min-height: 600px; }
+    .trending-card img { width: 100%; height: 100%; object-fit: cover; display: block; min-height: 290px; transition: transform var(--transition); }
+    .trending-card:hover img { transform: scale(1.05); }
+    .trending-info { position: absolute; bottom: 0; left: 0; right: 0; padding: 1.5rem; background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 100%); color: var(--white); }
+    .trending-info h4 { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; font-weight: 300; }
+    .trending-info p { font-size: 0.72rem; color: rgba(255,255,255,0.6); margin-top: 0.2rem; }
+    .trending-price { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; color: var(--gold-light); margin-top: 0.4rem; }
+
+    /* OFFER STRIP */
+    .offer-strip { background: var(--gold); padding: 1.5rem 4rem; display: flex; align-items: center; justify-content: space-between; }
+    .offer-strip-text { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; color: var(--white); }
+    .offer-strip-tag { font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase; color: rgba(255,255,255,0.8); }
+    .offer-strip-code { background: var(--white); color: var(--gold); padding: 0.5rem 1.5rem; font-size: 0.82rem; font-weight: 500; letter-spacing: 0.15em; cursor: pointer; transition: all 0.3s; border: none; font-family: 'DM Sans', sans-serif; }
+    .offer-strip-code:hover { background: var(--black); color: var(--white); }
+
+    /* BRANDS */
+    .brands-section { padding: 5rem 4rem; overflow: hidden; }
+    .brands-scroll { display: flex; gap: 4rem; animation: brandScroll 25s linear infinite; white-space: nowrap; }
+    .brand-item { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; font-weight: 300; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gray-mid); transition: color 0.3s; flex-shrink: 0; cursor: pointer; }
+    .brand-item:hover { color: var(--black); }
+    @keyframes brandScroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+    /* NEW ARRIVALS */
+    .new-arrivals { padding: 6rem 4rem; background: var(--gray-light); }
+    .arrivals-wrapper { display: flex; gap: 2rem; overflow-x: auto; padding-bottom: 1rem; scrollbar-width: none; }
+    .arrivals-wrapper::-webkit-scrollbar { display: none; }
+    .arrival-card { flex: 0 0 260px; cursor: pointer; }
+    .arrival-img-wrap { overflow: hidden; aspect-ratio: 3/4; background: var(--white); margin-bottom: 1rem; position: relative; }
+    .arrival-img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform var(--transition); }
+    .arrival-card:hover .arrival-img { transform: scale(1.05); }
+    .arrival-badge { position: absolute; top: 1rem; left: 1rem; background: var(--gold); color: var(--white); font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.3rem 0.6rem; }
+
+    /* EDITORIAL */
+    .editorial { padding: 6rem 4rem; }
+    .editorial-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.5rem; }
+    .editorial-card { cursor: pointer; }
+    .editorial-img-wrap { overflow: hidden; aspect-ratio: 4/3; margin-bottom: 1.5rem; }
+    .editorial-img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform var(--transition); }
+    .editorial-card:hover .editorial-img { transform: scale(1.04); }
+    .editorial-tag { font-size: 0.68rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.6rem; }
+    .editorial-title { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; font-weight: 400; line-height: 1.3; margin-bottom: 0.6rem; }
+    .editorial-excerpt { font-size: 0.82rem; color: var(--gray-text); line-height: 1.7; }
+    .editorial-date { font-size: 0.68rem; color: var(--gray-text); margin-top: 0.8rem; }
+
+    /* TESTIMONIALS */
+    .testimonials { padding: 6rem 4rem; background: var(--gray-light); }
+    .testimonials-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+    .testimonial-card { border: 1px solid var(--gray-mid); padding: 2rem; position: relative; background: var(--white); }
+    .testimonial-quote { font-family: 'Cormorant Garamond', serif; font-size: 4rem; color: var(--gold); line-height: 1; position: absolute; top: 0.5rem; right: 1.5rem; opacity: 0.2; }
+    .testimonial-text { font-size: 0.88rem; line-height: 1.8; color: var(--black); margin-bottom: 1.5rem; font-style: italic; }
+    .testimonial-author { display: flex; align-items: center; gap: 1rem; }
+    .testimonial-avatar { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; }
+    .testimonial-name { font-size: 0.82rem; font-weight: 500; }
+    .testimonial-location { font-size: 0.7rem; color: var(--gray-text); margin-top: 0.2rem; }
+
+    /* PERKS */
+    .perks { padding: 4rem; background: var(--black); }
+    .perks-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; }
+    .perk { text-align: center; padding: 2.5rem 1.5rem; border: 1px solid rgba(255,255,255,0.08); transition: border-color 0.3s; }
+    .perk:hover { border-color: var(--gold); }
+    .perk-icon { font-size: 2rem; margin-bottom: 1rem; display: block; }
+    .perk-title { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; color: var(--white); margin-bottom: 0.5rem; }
+    .perk-text { font-size: 0.78rem; color: rgba(255,255,255,0.4); line-height: 1.7; }
+
+    /* NEWSLETTER */
+    .newsletter { padding: 6rem 4rem; background: var(--gold-pale); text-align: center; }
+    .newsletter-title { font-size: clamp(2rem, 3vw, 3rem); margin-bottom: 1rem; }
+    .newsletter-desc { font-size: 0.9rem; color: var(--gray-text); margin-bottom: 2rem; }
+    .newsletter-form { display: flex; max-width: 500px; margin: 0 auto; }
+    .newsletter-input { flex: 1; padding: 0.9rem 1.2rem; border: 1px solid var(--gray-mid); background: var(--white); font-family: 'DM Sans', sans-serif; font-size: 0.85rem; outline: none; }
+    .newsletter-input:focus { border-color: var(--gold); }
+
+    /* FOOTER */
+    footer { background: var(--black); color: var(--white); padding: 5rem 4rem 2rem; }
+    .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 4rem; margin-bottom: 4rem; }
+    .footer-brand { font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 600; letter-spacing: 0.3em; margin-bottom: 1rem; }
+    .footer-brand span { color: var(--gold); }
+    .footer-tagline { font-size: 0.82rem; color: rgba(255,255,255,0.4); line-height: 1.8; margin-bottom: 1.5rem; max-width: 260px; }
+    .footer-social { display: flex; gap: 0.8rem; }
+    .footer-social-btn { width: 36px; height: 36px; border: 1px solid rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 0.75rem; cursor: pointer; text-decoration: none; color: var(--white); transition: all 0.3s; }
+    .footer-social-btn:hover { border-color: var(--gold); color: var(--gold); }
+    .footer-col-title { font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 1.5rem; }
+    .footer-links { list-style: none; display: flex; flex-direction: column; gap: 0.7rem; }
+    .footer-links a { font-size: 0.82rem; color: rgba(255,255,255,0.55); text-decoration: none; transition: color 0.3s; }
+    .footer-links a:hover { color: var(--gold); }
+    .footer-bottom { padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.08); display: flex; justify-content: space-between; align-items: center; }
+    .footer-copy { font-size: 0.72rem; color: rgba(255,255,255,0.3); }
+    .pay-badges { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+    .pay-badge { background: rgba(255,255,255,0.08); padding: 0.3rem 0.6rem; font-size: 0.62rem; letter-spacing: 0.1em; color: rgba(255,255,255,0.5); }
+
+    /* REVEAL */
+    .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* TOAST */
+    .toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%); background: var(--black); color: var(--white); padding: 0.9rem 2rem; font-size: 0.82rem; letter-spacing: 0.06em; z-index: 500; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; white-space: nowrap; }
+    .toast.show { opacity: 1; }
+
+    /* CART DRAWER */
+    .cart-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 200; opacity: 0; pointer-events: none; transition: opacity var(--transition); }
+    .cart-overlay.open { opacity: 1; pointer-events: all; }
+    .cart-drawer { position: fixed; top: 0; right: 0; bottom: 0; width: 420px; background: var(--white); z-index: 201; transform: translateX(100%); transition: transform var(--transition); display: flex; flex-direction: column; }
+    .cart-overlay.open .cart-drawer { transform: translateX(0); }
+    .cart-header { padding: 2rem; border-bottom: 1px solid var(--gray-mid); display: flex; justify-content: space-between; align-items: center; }
+    .cart-close { background: none; border: none; cursor: pointer; font-size: 1.4rem; }
+    .cart-body { flex: 1; padding: 2rem; overflow-y: auto; }
+    .cart-empty { text-align: center; padding: 4rem 0; color: var(--gray-text); }
+    .cart-empty-icon { font-size: 3rem; margin-bottom: 1rem; }
+    .cart-footer { padding: 2rem; border-top: 1px solid var(--gray-mid); }
+    .cart-total { display: flex; justify-content: space-between; margin-bottom: 1.5rem; }
+    .cart-total span { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; }
+
+    /* SEARCH MODAL */
+    .search-modal { position: fixed; inset: 0; background: rgba(250,250,250,0.98); z-index: 300; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity var(--transition); }
+    .search-modal.open { opacity: 1; pointer-events: all; }
+    .search-modal-inner { width: 600px; max-width: 90%; }
+    .search-input { width: 100%; font-family: 'Cormorant Garamond', serif; font-size: 3rem; font-weight: 300; border: none; border-bottom: 1px solid var(--gray-mid); background: none; outline: none; padding: 1rem 0; color: var(--black); }
+    .search-input::placeholder { color: var(--gray-mid); }
+    .search-close-btn { position: absolute; top: 2rem; right: 2rem; background: none; border: none; font-size: 1.5rem; cursor: pointer; }
+    .search-popular { margin-top: 2rem; }
+    .search-popular-label { font-size: 0.68rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gray-text); margin-bottom: 0.8rem; }
+    .search-tags { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .search-tag { padding: 0.3rem 0.8rem; border: 1px solid var(--gray-mid); font-size: 0.78rem; cursor: pointer; transition: all 0.3s; background: none; font-family: 'DM Sans', sans-serif; }
+    .search-tag:hover { background: var(--black); color: var(--white); border-color: var(--black); }
+
+    /* MEGA MENU */
+    .mega-menu { position: fixed; top: 72px; left: 0; right: 0; background: var(--white); border-bottom: 1px solid var(--gray-mid); padding: 2.5rem 4rem; display: none; grid-template-columns: repeat(5, 1fr); gap: 2rem; z-index: 99; box-shadow: 0 20px 60px rgba(0,0,0,0.06); }
+    .mega-menu.active { display: grid; }
+    .mega-col-title { font-size: 0.68rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); margin-bottom: 1rem; }
+    .mega-links { list-style: none; }
+    .mega-links li { margin-bottom: 0.5rem; }
+    .mega-links a { font-size: 0.82rem; color: var(--black); text-decoration: none; transition: color 0.3s; }
+    .mega-links a:hover { color: var(--gold); }
+    .mega-feature img { width: 100%; height: 160px; object-fit: cover; display: block; }
+    .mega-feature-label { font-size: 0.72rem; color: var(--gray-text); margin-top: 0.8rem; }
+    .mega-feature-title { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; margin-top: 0.2rem; }
+
+    @media (max-width: 1024px) {
+      nav { padding: 0 2rem; }
+      .hero { grid-template-columns: 1fr; }
+      .hero-right { min-height: 60vh; }
+      .cat-grid { grid-template-columns: repeat(2, 1fr); }
+      .cat-card:first-child { grid-row: auto; }
+      .products-grid { grid-template-columns: repeat(2, 1fr); }
+      .trending-grid { grid-template-columns: 1fr 1fr; }
+      .promo-banner { grid-template-columns: 1fr; }
+      .perks-grid { grid-template-columns: repeat(2, 1fr); }
+      .footer-grid { grid-template-columns: 1fr 1fr; gap: 2rem; }
+      .editorial-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 768px) {
+      .nav-links, .nav-search { display: none; }
+      .categories, .featured, .trending, .editorial, .testimonials, .newsletter, .new-arrivals { padding: 4rem 1.5rem; }
+      .brands-section, .perks { padding: 3rem 1.5rem; }
+      footer { padding: 4rem 1.5rem 2rem; }
+      .editorial-grid { grid-template-columns: 1fr; }
+      .testimonials-grid { grid-template-columns: 1fr; }
+      .promo-right { padding: 3rem 2rem; }
+      .offer-strip { flex-direction: column; gap: 1rem; text-align: center; padding: 2rem 1.5rem; }
+      .footer-grid { grid-template-columns: 1fr; gap: 2rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-loader" id="pageLoader">
+  <div><div class="loader-logo">AUR<span>A</span></div><div class="loader-line"></div></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Cart Overlay -->
+<div class="cart-overlay" id="cartOverlay">
+  <div class="cart-drawer">
+    <div class="cart-header">
+      <h3 style="font-size:1.2rem">Your Bag <span id="cartHeaderCount">(0)</span></h3>
+      <button class="cart-close" id="cartClose">✕</button>
+    </div>
+    <div class="cart-body">
+      <div class="cart-empty">
+        <div class="cart-empty-icon">🛍</div>
+        <p>Your bag is beautifully empty.</p>
+        <p style="font-size:0.78rem;color:var(--gray-text);margin-top:0.5rem">Start exploring our collections.</p>
+      </div>
+    </div>
+    <div class="cart-footer">
+      <div class="cart-total"><span>Total</span><span>$0.00</span></div>
+      <a href="#" class="btn-primary" style="width:100%;text-align:center;display:block">Proceed to Checkout</a>
+    </div>
+  </div>
+</div>
+
+<!-- Search Modal -->
+<div class="search-modal" id="searchModal">
+  <button class="search-close-btn" id="searchClose">✕</button>
+  <div class="search-modal-inner">
+    <input type="text" class="search-input" placeholder="Search for products…" />
+    <div class="search-popular">
+      <div class="search-popular-label">Popular Searches</div>
+      <div class="search-tags">
+        <button class="search-tag">Silk Dress</button>
+        <button class="search-tag">Cashmere Sweater</button>
+        <button class="search-tag">Leather Bag</button>
+        <button class="search-tag">Gold Jewelry</button>
+        <button class="search-tag">Sunglasses</button>
+        <button class="search-tag">Sneakers</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Mega Menu -->
+<div class="mega-menu" id="megaMenu">
+  <div>
+    <div class="mega-col-title">Women</div>
+    <ul class="mega-links">
+      <li><a href="#">New Arrivals</a></li><li><a href="#">Dresses</a></li>
+      <li><a href="#">Tops &amp; Blouses</a></li><li><a href="#">Coats &amp; Jackets</a></li>
+      <li><a href="#">Skirts</a></li><li><a href="#">Activewear</a></li>
+    </ul>
+  </div>
+  <div>
+    <div class="mega-col-title">Men</div>
+    <ul class="mega-links">
+      <li><a href="#">New Arrivals</a></li><li><a href="#">Shirts</a></li>
+      <li><a href="#">Trousers</a></li><li><a href="#">Suits</a></li>
+      <li><a href="#">Sneakers</a></li><li><a href="#">Accessories</a></li>
+    </ul>
+  </div>
+  <div>
+    <div class="mega-col-title">Accessories</div>
+    <ul class="mega-links">
+      <li><a href="#">Bags</a></li><li><a href="#">Jewelry</a></li>
+      <li><a href="#">Watches</a></li><li><a href="#">Sunglasses</a></li>
+      <li><a href="#">Scarves</a></li><li><a href="#">Belts</a></li>
+    </ul>
+  </div>
+  <div>
+    <div class="mega-col-title">Beauty</div>
+    <ul class="mega-links">
+      <li><a href="#">Skincare</a></li><li><a href="#">Fragrance</a></li>
+      <li><a href="#">Makeup</a></li><li><a href="#">Hair Care</a></li>
+      <li><a href="#">Body &amp; Bath</a></li>
+    </ul>
+  </div>
+  <div class="mega-feature">
+    <img src="https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=400&q=90" alt="Featured" />
+    <div class="mega-feature-label">Just Landed</div>
+    <div class="mega-feature-title">Summer Luxe Collection</div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">AUR<span>A</span></a>
+  <ul class="nav-links">
+    <li><a href="#" id="shopLink">Shop</a></li>
+    <li><a href="#categories">Collections</a></li>
+    <li><a href="#trending">Trending</a></li>
+    <li><a href="#editorial">Editorial</a></li>
+    <li><a href="#brands">Brands</a></li>
+  </ul>
+  <div class="nav-actions">
+    <div class="nav-search" id="searchTrigger">
+      <span>🔍</span><span>Search&hellip;</span>
+    </div>
+    <button class="nav-icon-btn">♡ Wishlist</button>
+    <button class="nav-icon-btn" id="cartBtn">
+      🛍 Bag <span class="cart-count" id="cartCount">0</span>
+    </button>
+    <a href="#" class="btn-primary" style="padding:0.6rem 1.3rem;font-size:0.72rem">Sign In</a>
+  </div>
+</nav>
+
+<!-- ANNOUNCEMENT -->
+<div class="announcement">
+  Free worldwide shipping on orders over <span>$150</span> &nbsp;·&nbsp; Use code <span>AURA25</span> for 25% off your first order
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-tag">New Collection 2025</div>
+    <h1 class="hero-title">Dress with<br><em>Intention.</em><br>Live with Aura.</h1>
+    <p class="hero-subtitle">Curated luxury at your fingertips. Discover thousands of premium brands, delivered to your door with the care they deserve.</p>
+    <div class="hero-cta">
+      <a href="#featured" class="btn-primary">Explore Collection</a>
+      <a href="#categories" class="btn-outline">Browse Categories</a>
+    </div>
+    <div class="hero-stats">
+      <div><div class="hero-stat-num">2M+</div><div class="hero-stat-label">Happy Clients</div></div>
+      <div><div class="hero-stat-num">12K</div><div class="hero-stat-label">Luxury Brands</div></div>
+      <div><div class="hero-stat-num">150+</div><div class="hero-stat-label">Countries</div></div>
+    </div>
+  </div>
+  <div class="hero-right">
+    <img src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=1400&q=95" alt="AURA Hero" class="hero-img" />
+    <div class="hero-badge">
+      <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=200&q=90" alt="Product" class="hero-badge-img" />
+      <div>
+        <div class="hero-badge-label">Most Loved</div>
+        <div class="hero-badge-name">The Silk Wrap Dress</div>
+        <div style="color:var(--gold);font-size:0.9rem;margin-top:0.2rem">$289</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CATEGORIES -->
+<section class="categories" id="categories">
+  <div class="section-header reveal">
+    <div class="section-tag">Shop by Category</div>
+    <h2 class="section-title">Every Desire,<br>One Destination</h2>
+    <p class="section-desc">From runway to ready-to-wear, explore our meticulously curated universe of style.</p>
+  </div>
+  <div class="cat-grid reveal">
+    <div class="cat-card"><img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=900&q=90" alt="Women's Fashion" /><div class="cat-overlay"><div class="cat-label">Category</div><div class="cat-name">Women's Fashion</div><div class="cat-count">4,200+ items</div></div></div>
+    <div class="cat-card"><img src="https://images.unsplash.com/photo-1490578474895-699cd4e2cf59?w=600&q=90" alt="Men's Edit" /><div class="cat-overlay"><div class="cat-label">Category</div><div class="cat-name">Men's Edit</div><div class="cat-count">2,800+ items</div></div></div>
+    <div class="cat-card"><img src="https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&q=90" alt="Handbags" /><div class="cat-overlay"><div class="cat-label">Category</div><div class="cat-name">Handbags</div><div class="cat-count">980+ items</div></div></div>
+    <div class="cat-card"><img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=90" alt="Footwear" /><div class="cat-overlay"><div class="cat-label">Category</div><div class="cat-name">Footwear</div><div class="cat-count">1,500+ items</div></div></div>
+    <div class="cat-card"><img src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=600&q=90" alt="Fine Jewelry" /><div class="cat-overlay"><div class="cat-label">Category</div><div class="cat-name">Fine Jewelry</div><div class="cat-count">640+ items</div></div></div>
+    <div class="cat-card"><img src="https://images.unsplash.com/photo-1556228720-195a672e8a03?w=600&q=90" alt="Beauty" /><div class="cat-overlay"><div class="cat-label">Category</div><div class="cat-name">Beauty</div><div class="cat-count">1,200+ items</div></div></div>
+    <div class="cat-card"><img src="https://images.unsplash.com/photo-1484154218962-a197022b5858?w=600&q=90" alt="Home & Living" /><div class="cat-overlay"><div class="cat-label">Category</div><div class="cat-name">Home &amp; Living</div><div class="cat-count">870+ items</div></div></div>
+  </div>
+</section>
+
+<!-- OFFER STRIP -->
+<div class="offer-strip">
+  <div><div class="offer-strip-tag">Limited Time Offer</div><div class="offer-strip-text">Up to 40% off on Summer Essentials</div></div>
+  <div style="color:rgba(255,255,255,0.8);font-size:0.82rem">Valid till April 30, 2025</div>
+  <div><span style="color:rgba(255,255,255,0.7);font-size:0.78rem;margin-right:0.8rem">Use code:</span><button class="offer-strip-code" onclick="copyCode()">SUMMER40</button></div>
+</div>
+
+<!-- FEATURED PRODUCTS -->
+<section class="featured" id="featured">
+  <div class="section-header reveal">
+    <div class="section-tag">Featured</div>
+    <h2 class="section-title">Editor's Selection</h2>
+    <p class="section-desc">Hand-picked by our stylists — the pieces worth investing in this season.</p>
+  </div>
+  <div class="filter-bar">
+    <div class="filter-tabs">
+      <button class="filter-tab active">All</button>
+      <button class="filter-tab">New In</button>
+      <button class="filter-tab">Best Sellers</button>
+      <button class="filter-tab">On Sale</button>
+      <button class="filter-tab">Luxury</button>
+    </div>
+    <div class="filter-right"><span>48 products</span><span>↕ Sort: Relevance</span></div>
+  </div>
+  <div class="products-grid reveal">
+    <div class="product-card" onclick="addToCart(this)"><div class="product-img-wrap"><span class="product-badge">New In</span><img src="https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=600&q=90" alt="Silk Dress" class="product-img" /><div class="product-actions"><button class="product-add-btn">Add to Bag</button><button class="product-wish-btn" onclick="toggleWish(event,this)">♡</button></div></div><div class="product-brand">Maison Élite</div><div class="product-name">Ivory Silk Slip Dress</div><div class="product-price"><span class="product-price-current">$389</span></div><div class="product-stars"><span class="star">★★★★</span><span class="star" style="opacity:0.4">★</span><span class="star-count">(142)</span></div></div>
+    <div class="product-card" onclick="addToCart(this)"><div class="product-img-wrap"><span class="product-badge sale">−30%</span><img src="https://images.unsplash.com/photo-1581044777550-4cfa60707c03?w=600&q=90" alt="Leather Blazer" class="product-img" /><div class="product-actions"><button class="product-add-btn">Add to Bag</button><button class="product-wish-btn" onclick="toggleWish(event,this)">♡</button></div></div><div class="product-brand">Noir Studio</div><div class="product-name">Oversized Leather Blazer</div><div class="product-price"><span class="product-price-current">$520</span><span class="product-price-old">$740</span></div><div class="product-stars"><span class="star">★★★★★</span><span class="star-count">(89)</span></div></div>
+    <div class="product-card" onclick="addToCart(this)"><div class="product-img-wrap"><img src="https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=600&q=90" alt="Sneakers" class="product-img" /><div class="product-actions"><button class="product-add-btn">Add to Bag</button><button class="product-wish-btn" onclick="toggleWish(event,this)">♡</button></div></div><div class="product-brand">Atelier Run</div><div class="product-name">Cloud Low Sneakers</div><div class="product-price"><span class="product-price-current">$245</span></div><div class="product-stars"><span class="star">★★★★</span><span class="star" style="opacity:0.4">★</span><span class="star-count">(203)</span></div></div>
+    <div class="product-card" onclick="addToCart(this)"><div class="product-img-wrap"><span class="product-badge">Best Seller</span><img src="https://images.unsplash.com/photo-1590874103328-eac38a683ce7?w=600&q=90" alt="Chain Bag" class="product-img" /><div class="product-actions"><button class="product-add-btn">Add to Bag</button><button class="product-wish-btn" onclick="toggleWish(event,this)">♡</button></div></div><div class="product-brand">Maison Élite</div><div class="product-name">Mini Quilted Chain Bag</div><div class="product-price"><span class="product-price-current">$890</span></div><div class="product-stars"><span class="star">★★★★★</span><span class="star-count">(317)</span></div></div>
+    <div class="product-card" onclick="addToCart(this)"><div class="product-img-wrap"><span class="product-badge sale">−20%</span><img src="https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=600&q=90" alt="Sunglasses" class="product-img" /><div class="product-actions"><button class="product-add-btn">Add to Bag</button><button class="product-wish-btn" onclick="toggleWish(event,this)">♡</button></div></div><div class="product-brand">Lumière</div><div class="product-name">Oversized Tinted Frames</div><div class="product-price"><span class="product-price-current">$160</span><span class="product-price-old">$200</span></div><div class="product-stars"><span class="star">★★★★</span><span class="star" style="opacity:0.4">★</span><span class="star-count">(76)</span></div></div>
+    <div class="product-card" onclick="addToCart(this)"><div class="product-img-wrap"><img src="https://images.unsplash.com/photo-1630019852942-f89202989a59?w=600&q=90" alt="Earrings" class="product-img" /><div class="product-actions"><button class="product-add-btn">Add to Bag</button><button class="product-wish-btn" onclick="toggleWish(event,this)">♡</button></div></div><div class="product-brand">Aurum Atelier</div><div class="product-name">Gold Hoop Earrings</div><div class="product-price"><span class="product-price-current">$340</span></div><div class="product-stars"><span class="star">★★★★★</span><span class="star-count">(54)</span></div></div>
+    <div class="product-card" onclick="addToCart(this)"><div class="product-img-wrap"><span class="product-badge">New In</span><img src="https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=600&q=90" alt="Perfume" class="product-img" /><div class="product-actions"><button class="product-add-btn">Add to Bag</button><button class="product-wish-btn" onclick="toggleWish(event,this)">♡</button></div></div><div class="product-brand">Senteur</div><div class="product-name">Oud &amp; Amber Eau de Parfum</div><div class="product-price"><span class="product-price-current">$195</span></div><div class="product-stars"><span class="star">★★★★</span><span class="star" style="opacity:0.4">★</span><span class="star-count">(128)</span></div></div>
+    <div class="product-card" onclick="addToCart(this)"><div class="product-img-wrap"><span class="product-badge sale">−15%</span><img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&q=90" alt="Watch" class="product-img" /><div class="product-actions"><button class="product-add-btn">Add to Bag</button><button class="product-wish-btn" onclick="toggleWish(event,this)">♡</button></div></div><div class="product-brand">Chrono Haus</div><div class="product-name">Minimalist Steel Watch</div><div class="product-price"><span class="product-price-current">$850</span><span class="product-price-old">$1,000</span></div><div class="product-stars"><span class="star">★★★★★</span><span class="star-count">(211)</span></div></div>
+  </div>
+  <div style="text-align:center;margin-top:3rem"><a href="#" class="btn-outline">View All Products</a></div>
+</section>
+
+<!-- PROMO BANNER -->
+<div class="promo-banner">
+  <div class="promo-left"><img src="https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=1200&q=95" alt="Summer Collection" class="promo-img" /></div>
+  <div class="promo-right">
+    <div class="promo-tag">Flash Sale — Ends In</div>
+    <div class="promo-countdown">
+      <div class="countdown-unit"><span class="countdown-num" id="ch">08</span><span class="countdown-label">Hours</span></div>
+      <div class="countdown-unit"><span class="countdown-num" id="cm">32</span><span class="countdown-label">Mins</span></div>
+      <div class="countdown-unit"><span class="countdown-num" id="cs">15</span><span class="countdown-label">Secs</span></div>
+    </div>
+    <h2 class="promo-title">Summer<br><em>Luxe</em><br>Collection</h2>
+    <p class="promo-text">Effortless elegance reimagined for the sun-drenched season. Premium fabrics, timeless cuts — up to 40% off.</p>
+    <a href="#" class="btn-primary">Shop the Sale</a>
+  </div>
+</div>
+
+<!-- TRENDING -->
+<section class="trending" id="trending">
+  <div class="section-header reveal">
+    <div class="section-tag">Trending Now</div>
+    <h2 class="section-title">What the World<br>is Wearing</h2>
+  </div>
+  <div class="trending-grid reveal">
+    <div class="trending-card"><img src="https://images.unsplash.com/photo-1509631179647-0177331693ae?w=900&q=90" alt="Power Suit" /><div class="trending-info"><h4>The Power Suit Moment</h4><p>Tailoring redefined</p><div class="trending-price">From $480</div></div></div>
+    <div class="trending-card"><img src="https://images.unsplash.com/photo-1516762689617-e1cffcef479d?w=600&q=90" alt="Jewelry" /><div class="trending-info"><h4>Minimal Gold Jewelry</h4><p>Stack &amp; layer</p><div class="trending-price">From $85</div></div></div>
+    <div class="trending-card"><img src="https://images.unsplash.com/photo-1519415510236-718bdfcd89c8?w=600&q=90" alt="Boots" /><div class="trending-info"><h4>Platform Boots</h4><p>Elevated street style</p><div class="trending-price">From $195</div></div></div>
+    <div class="trending-card"><img src="https://images.unsplash.com/photo-1576995853123-5a10305d93c0?w=600&q=90" alt="Linen" /><div class="trending-info"><h4>Linen Coordinates</h4><p>Effortless summer dressing</p><div class="trending-price">From $120</div></div></div>
+    <div class="trending-card"><img src="https://images.unsplash.com/photo-1591348278863-a8fb3887e2aa?w=600&q=90" alt="Shoulder Bags" /><div class="trending-info"><h4>Shoulder Bags</h4><p>The season's must-have</p><div class="trending-price">From $220</div></div></div>
+  </div>
+</section>
+
+<!-- NEW ARRIVALS -->
+<section class="new-arrivals">
+  <div class="section-header reveal">
+    <div class="section-tag">Just Landed</div>
+    <h2 class="section-title">New Arrivals</h2>
+    <p class="section-desc">Fresh drops, updated daily. Be the first to own what's next.</p>
+  </div>
+  <div class="arrivals-wrapper reveal">
+    <div class="arrival-card" onclick="addToCart(this)"><div class="arrival-img-wrap"><span class="arrival-badge">New</span><img src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=600&q=90" alt="Puffer Vest" class="arrival-img" /></div><div class="product-brand">Atelier Nord</div><div class="product-name">Quilted Puffer Vest</div><div class="product-price"><span class="product-price-current">$345</span></div></div>
+    <div class="arrival-card" onclick="addToCart(this)"><div class="arrival-img-wrap"><span class="arrival-badge">New</span><img src="https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=600&q=90" alt="Linen Top" class="arrival-img" /></div><div class="product-brand">Soleil Blanc</div><div class="product-name">Linen Oversized Top</div><div class="product-price"><span class="product-price-current">$128</span></div></div>
+    <div class="arrival-card" onclick="addToCart(this)"><div class="arrival-img-wrap"><span class="arrival-badge">New</span><img src="https://images.unsplash.com/photo-1605812860427-4024433a70fd?w=600&q=90" alt="Chelsea Boots" class="arrival-img" /></div><div class="product-brand">Maison Botte</div><div class="product-name">Suede Chelsea Boots</div><div class="product-price"><span class="product-price-current">$420</span></div></div>
+    <div class="arrival-card" onclick="addToCart(this)"><div class="arrival-img-wrap"><span class="arrival-badge">New</span><img src="https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?w=600&q=90" alt="Midi Dress" class="arrival-img" /></div><div class="product-brand">Maison Élite</div><div class="product-name">Floral Midi Dress</div><div class="product-price"><span class="product-price-current">$290</span></div></div>
+    <div class="arrival-card" onclick="addToCart(this)"><div class="arrival-img-wrap"><span class="arrival-badge">New</span><img src="https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&q=90" alt="Tote Bag" class="arrival-img" /></div><div class="product-brand">Straps &amp; Co</div><div class="product-name">Slouchy Tote Bag</div><div class="product-price"><span class="product-price-current">$560</span></div></div>
+    <div class="arrival-card" onclick="addToCart(this)"><div class="arrival-img-wrap"><span class="arrival-badge">New</span><img src="https://images.unsplash.com/photo-1601924994987-69e26d50dc26?w=600&q=90" alt="Silk Scarf" class="arrival-img" /></div><div class="product-brand">Lumière Silk</div><div class="product-name">Printed Silk Scarf</div><div class="product-price"><span class="product-price-current">$185</span></div></div>
+  </div>
+</section>
+
+<!-- BRANDS -->
+<section class="brands-section" id="brands">
+  <div class="section-header reveal">
+    <div class="section-tag">Partners</div>
+    <h2 class="section-title">12,000+ Brands.<br>One Platform.</h2>
+  </div>
+  <div style="overflow:hidden">
+    <div class="brands-scroll">
+      <span class="brand-item">Maison Élite</span><span class="brand-item">Noir Studio</span><span class="brand-item">Lumière</span><span class="brand-item">Atelier Run</span><span class="brand-item">Aurum Atelier</span><span class="brand-item">Senteur</span><span class="brand-item">Chrono Haus</span><span class="brand-item">Soleil Blanc</span><span class="brand-item">Maison Botte</span><span class="brand-item">Atelier Nord</span>
+      <span class="brand-item">Maison Élite</span><span class="brand-item">Noir Studio</span><span class="brand-item">Lumière</span><span class="brand-item">Atelier Run</span><span class="brand-item">Aurum Atelier</span><span class="brand-item">Senteur</span><span class="brand-item">Chrono Haus</span><span class="brand-item">Soleil Blanc</span><span class="brand-item">Maison Botte</span><span class="brand-item">Atelier Nord</span>
+    </div>
+  </div>
+</section>
+
+<!-- EDITORIAL -->
+<section class="editorial" id="editorial">
+  <div class="section-header reveal">
+    <div class="section-tag">Editorial</div>
+    <h2 class="section-title">Style Stories</h2>
+    <p class="section-desc">Inspiration, trends, and the stories behind the clothes we love.</p>
+  </div>
+  <div class="editorial-grid reveal">
+    <div class="editorial-card"><div class="editorial-img-wrap"><img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=90" alt="Style Guide" class="editorial-img" /></div><div class="editorial-tag">Style Guide</div><h3 class="editorial-title">10 Ways to Style a White Shirt This Season</h3><p class="editorial-excerpt">From boardrooms to beach bars — the versatile white shirt is still fashion's greatest equalizer.</p><div class="editorial-date">April 18, 2025 · 4 min read</div></div>
+    <div class="editorial-card"><div class="editorial-img-wrap"><img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=800&q=90" alt="Trend Report" class="editorial-img" /></div><div class="editorial-tag">Trend Report</div><h3 class="editorial-title">The Return of Quiet Luxury</h3><p class="editorial-excerpt">Why the most fashionable people are wearing less — and spending more on what truly matters.</p><div class="editorial-date">April 12, 2025 · 6 min read</div></div>
+    <div class="editorial-card"><div class="editorial-img-wrap"><img src="https://images.unsplash.com/photo-1487222477894-8943e31ef7b2?w=800&q=90" alt="Interview" class="editorial-img" /></div><div class="editorial-tag">Interview</div><h3 class="editorial-title">Inside the Wardrobe of a Parisian Art Director</h3><p class="editorial-excerpt">She owns 40 pieces, wears them endlessly — and never looks the same twice.</p><div class="editorial-date">April 5, 2025 · 8 min read</div></div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials">
+  <div class="section-header reveal">
+    <div class="section-tag">Reviews</div>
+    <h2 class="section-title">Loved by Millions</h2>
+  </div>
+  <div class="testimonials-grid reveal">
+    <div class="testimonial-card"><div class="testimonial-quote">"</div><p class="testimonial-text">AURA has completely changed how I shop. The curation is extraordinary — every piece I've ordered has exceeded my expectations in quality and presentation.</p><div class="testimonial-author"><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&q=90" alt="Sarah" class="testimonial-avatar" /><div><div class="testimonial-name">Sarah M.</div><div class="testimonial-location">New York, USA</div></div><div style="margin-left:auto;color:var(--gold)">★★★★★</div></div></div>
+    <div class="testimonial-card"><div class="testimonial-quote">"</div><p class="testimonial-text">The packaging alone deserves five stars. I feel like I'm unboxing a gift every single time. My wardrobe has never looked — or felt — better.</p><div class="testimonial-author"><img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&q=90" alt="James" class="testimonial-avatar" /><div><div class="testimonial-name">James T.</div><div class="testimonial-location">London, UK</div></div><div style="margin-left:auto;color:var(--gold)">★★★★★</div></div></div>
+    <div class="testimonial-card"><div class="testimonial-quote">"</div><p class="testimonial-text">I found pieces on AURA I couldn't find anywhere else. Customer service is impeccable and delivery was faster than I imagined possible.</p><div class="testimonial-author"><img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&q=90" alt="Priya" class="testimonial-avatar" /><div><div class="testimonial-name">Priya K.</div><div class="testimonial-location">Mumbai, India</div></div><div style="margin-left:auto;color:var(--gold)">★★★★★</div></div></div>
+  </div>
+</section>
+
+<!-- PERKS -->
+<div class="perks">
+  <div class="perks-grid">
+    <div class="perk"><span class="perk-icon">🚚</span><div class="perk-title">Free Worldwide Shipping</div><p class="perk-text">Complimentary delivery on all orders above $150. Express options available globally.</p></div>
+    <div class="perk"><span class="perk-icon">↩</span><div class="perk-title">30-Day Returns</div><p class="perk-text">Not in love? Return it, no questions asked. Full refund, guaranteed, always.</p></div>
+    <div class="perk"><span class="perk-icon">🔒</span><div class="perk-title">Secure Payments</div><p class="perk-text">Every transaction encrypted with bank-grade security. Shop with complete confidence.</p></div>
+    <div class="perk"><span class="perk-icon">✦</span><div class="perk-title">AURA Rewards</div><p class="perk-text">Earn points on every purchase. Redeem for exclusive discounts and curated experiences.</p></div>
+  </div>
+</div>
+
+<!-- NEWSLETTER -->
+<section class="newsletter">
+  <div class="section-tag">Stay Connected</div>
+  <h2 class="newsletter-title">The AURA Newsletter</h2>
+  <p class="newsletter-desc">Early access to new arrivals, exclusive offers, and style stories — curated weekly.</p>
+  <div class="newsletter-form">
+    <input type="email" class="newsletter-input" placeholder="Your email address" id="newsletterEmail" />
+    <button class="btn-primary" onclick="subscribeNewsletter()">Subscribe</button>
+  </div>
+  <p style="font-size:0.7rem;color:var(--gray-text);margin-top:1rem">By subscribing, you agree to our Privacy Policy. Unsubscribe anytime.</p>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand">AUR<span>A</span></div>
+      <p class="footer-tagline">Luxury fashion, beauty, and lifestyle curated from the world's finest brands. Delivered to you with care.</p>
+      <div class="footer-social">
+        <a href="#" class="footer-social-btn">IG</a>
+        <a href="#" class="footer-social-btn">TW</a>
+        <a href="#" class="footer-social-btn">FB</a>
+        <a href="#" class="footer-social-btn">PT</a>
+        <a href="#" class="footer-social-btn">YT</a>
+      </div>
+    </div>
+    <div>
+      <div class="footer-col-title">Shop</div>
+      <ul class="footer-links"><li><a href="#">New Arrivals</a></li><li><a href="#">Women</a></li><li><a href="#">Men</a></li><li><a href="#">Accessories</a></li><li><a href="#">Beauty</a></li><li><a href="#">Sale</a></li></ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Help</div>
+      <ul class="footer-links"><li><a href="#">Size Guide</a></li><li><a href="#">Track Order</a></li><li><a href="#">Returns</a></li><li><a href="#">Contact Us</a></li><li><a href="#">FAQ</a></li><li><a href="#">Careers</a></li></ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Company</div>
+      <ul class="footer-links"><li><a href="#">About AURA</a></li><li><a href="#">Sustainability</a></li><li><a href="#">Press</a></li><li><a href="#">Affiliate Program</a></li><li><a href="#">Privacy Policy</a></li><li><a href="#">Terms of Service</a></li></ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-copy">© 2025 AURA. All rights reserved. Crafted with ✦ for those who seek excellence.</div>
+    <div class="pay-badges">
+      <span class="pay-badge">VISA</span><span class="pay-badge">MC</span><span class="pay-badge">AMEX</span><span class="pay-badge">PayPal</span><span class="pay-badge">Apple Pay</span><span class="pay-badge">GPay</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Loader
+  window.addEventListener('load', () => {
+    setTimeout(() => document.getElementById('pageLoader').classList.add('done'), 1800);
+  });
+
+  // Cart
+  let cartItems = 0;
+  function addToCart(el) {
+    cartItems++;
+    const c = document.getElementById('cartCount');
+    c.textContent = cartItems;
+    c.style.display = 'flex';
+    document.getElementById('cartHeaderCount').textContent = '(' + cartItems + ')';
+    showToast('Added to your bag ✦');
+  }
+  document.getElementById('cartBtn').addEventListener('click', () => {
+    document.getElementById('cartOverlay').classList.add('open');
+  });
+  document.getElementById('cartOverlay').addEventListener('click', e => {
+    if (e.target === document.getElementById('cartOverlay'))
+      document.getElementById('cartOverlay').classList.remove('open');
+  });
+  document.getElementById('cartClose').addEventListener('click', () => {
+    document.getElementById('cartOverlay').classList.remove('open');
+  });
+
+  // Search
+  document.getElementById('searchTrigger').addEventListener('click', () => {
+    document.getElementById('searchModal').classList.add('open');
+    setTimeout(() => document.querySelector('.search-input').focus(), 100);
+  });
+  document.getElementById('searchClose').addEventListener('click', () => {
+    document.getElementById('searchModal').classList.remove('open');
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      document.getElementById('searchModal').classList.remove('open');
+      document.getElementById('cartOverlay').classList.remove('open');
+      document.getElementById('megaMenu').classList.remove('active');
+    }
+  });
+
+  // Mega Menu
+  const shopLink = document.getElementById('shopLink');
+  const megaMenu = document.getElementById('megaMenu');
+  let menuTimer;
+  shopLink.addEventListener('mouseenter', () => { clearTimeout(menuTimer); megaMenu.classList.add('active'); });
+  megaMenu.addEventListener('mouseenter', () => clearTimeout(menuTimer));
+  shopLink.addEventListener('mouseleave', () => { menuTimer = setTimeout(() => megaMenu.classList.remove('active'), 200); });
+  megaMenu.addEventListener('mouseleave', () => { menuTimer = setTimeout(() => megaMenu.classList.remove('active'), 200); });
+
+  // Wishlist
+  function toggleWish(e, btn) {
+    e.stopPropagation();
+    const wishlisted = btn.textContent === '♥';
+    btn.textContent = wishlisted ? '♡' : '♥';
+    btn.style.color = wishlisted ? '' : 'crimson';
+    showToast(wishlisted ? 'Removed from Wishlist' : 'Added to Wishlist ♥');
+  }
+
+  // Filter tabs
+  document.querySelectorAll('.filter-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+    });
+  });
+
+  // Toast
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2500);
+  }
+
+  // Coupon copy
+  function copyCode() {
+    navigator.clipboard.writeText('SUMMER40').catch(() => {});
+    showToast('Code SUMMER40 copied! ✦');
+  }
+
+  // Newsletter
+  function subscribeNewsletter() {
+    const v = document.getElementById('newsletterEmail').value;
+    if (v.includes('@')) {
+      showToast('Welcome to AURA! Check your inbox. ✦');
+      document.getElementById('newsletterEmail').value = '';
+    } else {
+      showToast('Please enter a valid email address.');
+    }
+  }
+
+  // Countdown
+  let total = 8*3600 + 32*60 + 15;
+  setInterval(() => {
+    if (total <= 0) return; total--;
+    document.getElementById('ch').textContent = String(Math.floor(total/3600)).padStart(2,'0');
+    document.getElementById('cm').textContent = String(Math.floor((total%3600)/60)).padStart(2,'0');
+    document.getElementById('cs').textContent = String(total%60).padStart(2,'0');
+  }, 1000);
+
+  // Scroll Reveal
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // Nav shadow on scroll
+  window.addEventListener('scroll', () => {
+    document.querySelector('nav').style.boxShadow = window.scrollY > 20 ? '0 4px 30px rgba(0,0,0,0.07)' : 'none';
+  });
+</script>
+</body>
+</html>
