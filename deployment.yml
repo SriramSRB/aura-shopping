@@ -22,7 +22,7 @@ spec:
       containers:
         - name: aura-shopping-container 
           image: sriramsrb/aura-shopping:latest
-          imagePullPolicy: Never
+          imagePullPolicy: Always
           ports:
             - containerPort: 3000
           resources:
