@@ -113,14 +113,3 @@ resource "aws_instance" "aura-shopping_server" {
 
     tags = { Name = "aura-shopping-server" }
 }
-
-resource "aws_eip" "aura-shopping_eip" {
-    instance = aws_instance.aura-shopping_server.id
-    domain   = "vpc"
-    tags     = { Name = "aura-shopping-eip" }
-}
-
-output "elastic_ip" {
-    value       = aws_eip.aura-shopping_eip.public_ip
-    description = "Fixed public IP - will never change on restart"
-}
